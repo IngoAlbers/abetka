@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Абетка Playground — Learn the Ukrainian Alphabet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800;900&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFF6E3; --ink:#1B2140; --soft:#5B6080; --card:#FFFFFF;
+  --blue:#2F5BFF; --yellow:#FFC83D;
+  --friend:#22B573; --friend-bg:#DDF7EA;
+  --trick:#FF6B3D; --trick-bg:#FFE5DA;
+  --new:#8B5CF6; --new-bg:#EDE5FF;
+  --good:#22B573; --bad:#F0445A;
+  --r:18px; --sh:4px 4px 0 var(--ink);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:Rubik,system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;
+  background-image:radial-gradient(circle at 1px 1px, rgba(27,33,64,.07) 1.5px, transparent 0);background-size:22px 22px}
+button{font-family:inherit;color:inherit;cursor:pointer}
+.wrap{max-width:1040px;margin:0 auto;padding:18px 16px 60px}
+
+/* header */
+header{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:58px;height:58px;border-radius:16px;background:var(--yellow);border:3px solid var(--ink);box-shadow:var(--sh);
+  display:grid;place-items:center;font-weight:900;font-size:28px;transform:rotate(-6deg)}
+.logo span{color:var(--blue)}
+h1{margin:0;font-size:clamp(22px,4vw,30px);font-weight:900;letter-spacing:-.5px}
+.sub{margin:2px 0 0;color:var(--soft);font-size:14px}
+.stats{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.stat{background:var(--card);border:2.5px solid var(--ink);border-radius:999px;padding:6px 12px;font-weight:700;font-size:14px;white-space:nowrap}
+.icon-btn{background:var(--card);border:2.5px solid var(--ink);border-radius:999px;width:38px;height:38px;font-size:17px}
+
+/* tabs */
+.tabs{display:flex;gap:10px;margin:22px 0 18px;flex-wrap:wrap}
+.tab{border:3px solid var(--ink);background:var(--card);border-radius:14px;padding:10px 18px;font-weight:800;font-size:16px;box-shadow:var(--sh);transition:transform .12s, box-shadow .12s}
+.tab:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
+.tab[aria-selected="true"]{background:var(--blue);color:#fff}
+.tab:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+
+/* legend / filters */
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.chip{border:2.5px solid var(--ink);background:var(--card);border-radius:999px;padding:7px 14px;font-weight:700;font-size:14px}
+.chip[aria-pressed="true"]{background:var(--ink);color:#fff}
+.chip .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:1px;border:1.5px solid var(--ink)}
+.explain{font-family:Caveat,cursive;font-size:22px;color:var(--soft);margin:-4px 0 14px;min-height:28px}
+
+/* grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:12px}
+.tile{position:relative;border:3px solid var(--ink);border-radius:var(--r);background:var(--card);box-shadow:var(--sh);
+  padding:12px 6px 10px;display:flex;flex-direction:column;align-items:center;gap:2px;transition:transform .15s}
+.tile:hover{transform:translateY(-3px) rotate(-1.5deg)}
+.tile:nth-child(even):hover{transform:translateY(-3px) rotate(1.5deg)}
+.tile .big{font-size:40px;font-weight:800;line-height:1}
+.tile .big small{font-size:26px;font-weight:500;opacity:.75;margin-left:3px}
+.tile .snd{font-size:13px;font-weight:700;border-radius:999px;padding:2px 9px;margin-top:4px}
+.tile .stars{font-size:12px;letter-spacing:1px;color:#D9D2BF;margin-top:3px}
+.tile .stars b{color:var(--yellow);-webkit-text-stroke:.6px #b98a00}
+.cat-friend{background:var(--friend-bg)} .cat-friend .snd{background:var(--friend);color:#fff}
+.cat-trick{background:var(--trick-bg)} .cat-trick .snd{background:var(--trick);color:#fff}
+.cat-new{background:var(--new-bg)} .cat-new .snd{background:var(--new);color:#fff}
+.tile.hide{display:none}
+
+/* modal card */
+.modal{position:fixed;inset:0;background:rgba(27,33,64,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
+.modal.open{display:flex}
+.card{width:min(460px,100%);background:var(--card);border:3px solid var(--ink);border-radius:26px;box-shadow:8px 8px 0 var(--ink);overflow:hidden;animation:pop .28s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:scale(.7) rotate(-4deg);opacity:0}to{transform:none;opacity:1}}
+.card-top{padding:18px 18px 14px;text-align:center;position:relative;border-bottom:3px solid var(--ink)}
+.card-top .badge{display:inline-block;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1px;padding:4px 10px;border-radius:999px;border:2px solid var(--ink);background:#fff}
+.card-letter{font-size:110px;font-weight:900;line-height:1.05;margin:6px 0 0}
+.card-letter small{font-size:70px;font-weight:500;opacity:.7;margin-left:8px}
+.card-name{font-size:14px;color:var(--soft)}
+.close{position:absolute;top:10px;right:10px}
+.card-body{padding:16px 18px 18px;display:grid;gap:12px}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.say{font-size:22px;font-weight:800}
+.say span{font-weight:400;font-size:15px;color:var(--soft);margin-left:6px}
+.word{display:flex;align-items:center;gap:12px;border:2.5px dashed var(--ink);border-radius:16px;padding:10px 12px}
+.word .emo{font-size:44px}
+.word .uk{font-size:26px;font-weight:700}
+.word .uk mark{background:var(--yellow);border-radius:6px;padding:0 2px}
+.word .tr{font-size:14px;color:var(--soft)}
+.cy{font-family:Rubik,system-ui,sans-serif;font-weight:700;font-size:.78em;letter-spacing:.2px}
+.tip{font-family:Caveat,cursive;font-size:24px;line-height:1.15;background:#FFF3C4;border-radius:14px;padding:10px 14px;transform:rotate(-.8deg)}
+.btn{border:3px solid var(--ink);background:var(--yellow);border-radius:14px;padding:9px 14px;font-weight:800;font-size:15px;box-shadow:3px 3px 0 var(--ink)}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.btn.blue{background:var(--blue);color:#fff}
+.btn.ghost{background:#fff}
+.btn.big{font-size:19px;padding:13px 22px}
+.nav{display:flex;justify-content:space-between;gap:8px}
+
+/* quiz */
+.panel{background:var(--card);border:3px solid var(--ink);border-radius:24px;box-shadow:6px 6px 0 var(--ink);padding:22px}
+.panel h2{margin:0 0 6px;font-size:28px;font-weight:900}
+.panel p{margin:0 0 14px;color:var(--soft)}
+.packs{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:18px}
+.pack{text-align:left;border:3px solid var(--ink);border-radius:16px;padding:12px 14px;background:#fff}
+.pack b{display:block;font-size:17px}
+.pack span{font-size:13px;color:var(--soft)}
+.pack[aria-pressed="true"]{outline:4px solid var(--blue);outline-offset:2px}
+.qbar{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.progress{flex:1;height:16px;border:3px solid var(--ink);border-radius:999px;overflow:hidden;background:#fff}
+.progress i{display:block;height:100%;width:0;background:repeating-linear-gradient(45deg,var(--blue) 0 10px,#4c74ff 10px 20px);transition:width .3s}
+.qcount{font-weight:800}
+.qprompt{font-size:18px;font-weight:700;text-align:center;margin:0 0 8px;color:var(--ink)!important}
+.qshow{text-align:center;font-size:96px;font-weight:900;line-height:1.1;min-height:110px;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+.qshow.sound{font-size:64px}
+.qshow .hint{display:block;width:100%;font-size:17px;font-weight:500;color:var(--soft)}
+.qshow.wordq{font-size:58px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.opt{border:3px solid var(--ink);border-radius:18px;background:#fff;box-shadow:var(--sh);padding:16px 10px;font-size:26px;font-weight:800;min-height:72px;transition:transform .1s}
+.opt small{display:block;font-size:13px;font-weight:500;color:var(--soft)}
+.opt:hover:not(:disabled){transform:translateY(-2px)}
+.opt.right{background:var(--good);color:#fff;animation:bounce .4s}
+.opt.right small{color:#eafff4}
+.opt.wrong{background:var(--bad);color:#fff;animation:shake .4s}
+.opt.wrong small{color:#ffe6ea}
+.opt:disabled{cursor:default}
+@keyframes bounce{40%{transform:scale(1.08)}}
+@keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.qfb{min-height:64px;margin-top:14px;text-align:center}
+.qfb .cheer{font-size:22px;font-weight:900}
+.qfb .cheer.ok{color:var(--good)} .qfb .cheer.no{color:var(--bad)}
+.qfb .tipline{font-family:Caveat,cursive;font-size:23px;color:var(--ink)}
+.qactions{display:flex;justify-content:center;gap:10px;margin-top:8px}
+.endscore{font-size:72px;font-weight:900;text-align:center;line-height:1}
+.endstars{font-size:46px;text-align:center;letter-spacing:6px;margin:6px 0 10px}
+.review{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:10px 0 18px}
+.review button{border:2.5px solid var(--ink);border-radius:12px;background:var(--trick-bg);font-size:22px;font-weight:800;padding:6px 12px}
+
+/* bubble pop */
+.pop-head{display:flex;gap:10px;align-items:stretch;margin-bottom:12px;flex-wrap:wrap}
+.target{flex:1;min-width:220px;background:var(--ink);color:#fff;border-radius:18px;padding:10px 16px;display:flex;align-items:center;gap:14px}
+.target .lbl{font-size:12px;text-transform:uppercase;letter-spacing:1.5px;opacity:.7}
+.target .t{font-size:34px;font-weight:900;color:var(--yellow);line-height:1}
+.target .h{font-size:14px;opacity:.85}
+.pstat{background:#fff;border:3px solid var(--ink);border-radius:18px;padding:8px 16px;text-align:center;min-width:92px}
+.pstat b{display:block;font-size:26px}
+.pstat span{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--soft)}
+.pond{position:relative;height:min(62vh,520px);border:3px solid var(--ink);border-radius:24px;overflow:hidden;box-shadow:6px 6px 0 var(--ink);
+  background:linear-gradient(180deg,#BFE3FF 0%,#7EC4FF 55%,#3E8BFF 100%)}
+.pond::after{content:"";position:absolute;inset:auto 0 0 0;height:40px;background:repeating-radial-gradient(circle at 20px 50px,rgba(255,255,255,.25) 0 18px,transparent 19px 40px);pointer-events:none}
+.bubble{position:absolute;width:76px;height:76px;border-radius:50%;border:3px solid rgba(27,33,64,.85);
+  background:radial-gradient(circle at 30% 28%,#fff 0 10%,rgba(255,255,255,.75) 11%,rgba(255,255,255,.35) 60%,rgba(255,255,255,.55) 100%);
+  font-size:38px;font-weight:900;display:grid;place-items:center;padding:0;touch-action:manipulation;will-change:transform}
+.bubble.popped{animation:burst .25s forwards;pointer-events:none}
+.bubble.bad{background:var(--bad);color:#fff;animation:shake .35s}
+@keyframes burst{to{transform:scale(1.7);opacity:0}}
+.pond.flash{animation:flashred .35s}
+@keyframes flashred{50%{box-shadow:0 0 0 6px var(--bad),6px 6px 0 var(--ink)}}
+.overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;z-index:5}
+.overlay .panel{max-width:440px;text-align:center}
+.floaty{position:absolute;font-weight:900;font-size:22px;color:#fff;-webkit-text-stroke:1px var(--ink);pointer-events:none;animation:up .8s forwards}
+@keyframes up{to{transform:translateY(-50px);opacity:0}}
+
+/* misc */
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(120px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:14px;font-weight:600;max-width:min(520px,92vw);text-align:center;transition:transform .3s;z-index:80}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.confetti{position:fixed;top:-20px;width:10px;height:16px;z-index:90;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+.foot{margin-top:28px;text-align:center;font-family:Caveat,cursive;font-size:22px;color:var(--soft)}
+[hidden]{display:none!important}
+@media (max-width:520px){
+  .opts{gap:9px}.opt{font-size:22px;padding:12px 6px}
+  .qshow{font-size:80px}.bubble{width:66px;height:66px;font-size:32px}
+  .card-letter{font-size:88px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="logo">А<span>а</span></div>
+      <div>
+        <h1>Абетка Playground</h1>
+        <p class="sub">33 letters. Zero boredom. Let’s go!</p>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat" title="Experience points">⭐ <b id="xp">0</b> XP</div>
+      <div class="stat" title="Correct answers in a row">🔥 <b id="streak">0</b></div>
+      <div class="stat" title="Letters with 3 stars">🏅 <b id="mastered">0</b>/33</div>
+      <button class="icon-btn" id="mute" aria-label="Toggle sound effects">🔊</button>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" data-tab="explore" aria-selected="true">🔍 Explore</button>
+    <button class="tab" role="tab" data-tab="quiz" aria-selected="false">🎯 Quiz</button>
+    <button class="tab" role="tab" data-tab="pop" aria-selected="false">🫧 Bubble Pop</button>
+  </nav>
+
+  <!-- EXPLORE -->
+  <section id="explore">
+    <div class="chips" id="filters">
+      <button class="chip" data-f="all" aria-pressed="true">All 33</button>
+      <button class="chip" data-f="friend" aria-pressed="false"><i class="dot" style="background:var(--friend)"></i>Friends</button>
+      <button class="chip" data-f="trick" aria-pressed="false"><i class="dot" style="background:var(--trick)"></i>Tricksters</button>
+      <button class="chip" data-f="new" aria-pressed="false"><i class="dot" style="background:var(--new)"></i>New faces</button>
+    </div>
+    <div class="explain" id="explain">Tap any letter to meet it. Collect ⭐⭐⭐ on each one by playing the games!</div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" hidden>
+    <div class="panel" id="qsetup">
+      <h2>Quiz time! 🎯</h2>
+      <p>10 quick questions. Match letters to sounds, sounds to letters, and read real words.</p>
+      <div class="packs" id="packs">
+        <button class="pack" data-pack="friend" aria-pressed="false"><b>😊 Friends</b><span>Look &amp; sound like English. Easy start!</span></button>
+        <button class="pack" data-pack="trick" aria-pressed="false"><b>🦊 Tricksters</b><span>Look English… but lie to you.</span></button>
+        <button class="pack" data-pack="new" aria-pressed="false"><b>✨ New faces</b><span>Letters you’ve never seen.</span></button>
+        <button class="pack" data-pack="all" aria-pressed="true"><b>🌈 Everything</b><span>All 33 letters, mixed up.</span></button>
+        <button class="pack" data-pack="weak" aria-pressed="false"><b>💪 My weak spots</b><span>Letters with fewer than 3 stars.</span></button>
+      </div>
+      <button class="btn big blue" id="qstart">Start! →</button>
+    </div>
+
+    <div class="panel" id="qplay" hidden>
+      <div class="qbar"><div class="progress"><i id="qprog"></i></div><span class="qcount" id="qcount">1/10</span></div>
+      <p class="qprompt" id="qprompt"></p>
+      <div class="qshow" id="qshow"></div>
+      <div class="opts" id="opts"></div>
+      <div class="qfb" id="qfb"></div>
+      <div class="qactions"><button class="btn" id="qspeak" hidden>🔈 Hear it</button><button class="btn blue" id="qnext" hidden>Next →</button></div>
+    </div>
+
+    <div class="panel" id="qend" hidden>
+      <div class="endscore" id="endscore">8/10</div>
+      <div class="endstars" id="endstars">⭐⭐⭐</div>
+      <p style="text-align:center" id="endmsg"></p>
+      <div class="review" id="review"></div>
+      <div class="qactions"><button class="btn big blue" id="qagain">Play again</button><button class="btn big ghost" id="qback">Change pack</button></div>
+    </div>
+  </section>
+
+  <!-- BUBBLE POP -->
+  <section id="pop" hidden>
+    <div class="pop-head">
+      <div class="target"><div><div class="lbl">Pop the sound</div><div class="t" id="ptarget">—</div></div><div class="h" id="phint">Press play to start</div></div>
+      <div class="pstat"><b id="pscore">0</b><span>Score</span></div>
+      <div class="pstat"><b id="ptime">45</b><span>Seconds</span></div>
+      <div class="pstat"><b id="pcombo">×1</b><span>Combo</span></div>
+    </div>
+    <div class="pond" id="pond">
+      <div class="overlay" id="poverlay">
+        <div class="panel">
+          <h2 id="ptitle">Bubble Pop 🫧</h2>
+          <p id="pdesc">A sound shows up top. Pop every bubble with the letter that makes that sound! Right pops build your combo. Wrong pops cost 3 seconds.</p>
+          <p id="pbest" style="font-weight:700;color:var(--ink)"></p>
+          <button class="btn big blue" id="pplay">Play!</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <p class="foot">Secret: Ukrainian is read exactly how it’s written. Learn these 33 sounds and you can read any word! 💙💛</p>
+</div>
+
+<!-- letter card -->
+<div class="modal" id="modal" role="dialog" aria-modal="true">
+  <div class="card" id="card"></div>
+</div>
+<div class="toast" id="toast"></div>
+<script src="audio.js"></script>
+
+<script>
+// [Upper, lower, name (spoken), sound, "like…", category, word, word romanized, meaning, emoji, memory trick]
+const L = [
+['А','а','а','ah','a in “father”','friend','авокадо','avokado','avocado','🥑','Looks just like English A. Open wide and say “ah!”'],
+['Б','б','бе','b','b in “bat”','new','банан','banan','banana','🍌','Looks like a 6 wearing a hat. Б is for Big Banana.'],
+['В','в','ве','v','v in “van”','trick','вовк','vovk','wolf','🐺','Trickster! Looks like B but says V. В is for a Very hungry wolf.'],
+['Г','г','ге','h','breathy h in “ahead”','new','гриб','hryb','mushroom','🍄','An upside-down L. A soft, breathy H, like fogging up a mirror.'],
+['Ґ','ґ','ґе','g','g in “go”','new','ґудзик','gudzyk','button','🔘','Г grew a little antenna and got loud: a hard G!'],
+['Д','д','де','d','d in “dog”','new','дім','dim','house','🏠','A little house standing on two feet. Д for Дім (house)!'],
+['Е','е','е','eh','e in “bed”','friend','екран','ekran','screen','🖥️','Looks like E and says “eh” as in bed (never “ee”!)'],
+['Є','є','є','yeh','ye in “yes”','new','єнот','yenot','raccoon','🦝','A round E sticking its tongue out. Say “yeh!” like yes.'],
+['Ж','ж','же','zh','s in “measure”','new','жаба','zhaba','frog','🐸','A bug with six legs going “zhzhzh”. Buzzy like the s in measure.'],
+['З','з','зе','z','z in “zoo”','new','зебра','zebra','zebra','🦓','Looks like the number 3. 3ebra → Z!'],
+['И','и','и','ih','i in “sit”','trick','кит','kyt','whale','🐋','Trickster! A backwards N. Short “ih” as in sit. It almost never starts a word.'],
+['І','і','і','ee','ee in “see”','friend','індик','indyk','turkey','🦃','Plain I with a dot. Says “ee” like see.'],
+['Ї','ї','ї','yee','yee in “yeast”','new','їжак','yizhak','hedgehog','🦔','І with two eyes on top 👀 says “yee!” Only Ukrainian has this letter.'],
+['Й','й','йот','y','y in “boy”','new','йогурт','yohurt','yogurt','🥛','И wearing a tiny hat. A quick glide, like the y in boy.'],
+['К','к','ка','k','k in “kite”','friend','кіт','kit','cat','🐱','Same as English K. And кіт means cat!'],
+['Л','л','ел','l','l in “lamp”','new','лимон','lymon','lemon','🍋','A little tent ⛺. Л for Lemon.'],
+['М','м','ем','m','m in “mom”','friend','миша','mysha','mouse','🐭','Same as English M. Mmm, a mouse.'],
+['Н','н','ен','n','n in “no”','trick','ніс','nis','nose','👃','Trickster! Looks like H but says N. Point at your Нose.'],
+['О','о','о','o','o in “more”','friend','око','oko','eye','👁️','Round like an eye. О-К-О even looks like a face!'],
+['П','п','пе','p','p in “pen”','new','піца','pitsa','pizza','🍕','Shaped like π. Pi for Pizza!'],
+['Р','р','ер','r','a rolled r','trick','риба','ryba','fish','🐟','Trickster! Looks like P but says a rolled R. Purr like a motor: rrr.'],
+['С','с','ес','s','s in “sun”','trick','сонце','sontse','sun','☀️','Trickster! Looks like C but is always S, like a Sun peeking out.'],
+['Т','т','те','t','t in “top”','friend','торт','tort','cake','🎂','Same as English T. And торт means cake!'],
+['У','у','у','oo','oo in “moon”','trick','усмішка','usmishka','smile','😊','Trickster! Looks like y but says “oo”. Make an oo-face, then smile.'],
+['Ф','ф','еф','f','f in “fun”','new','фламінго','flaminho','flamingo','🦩','A circle on a stick: a flamingo on one leg. F!'],
+['Х','х','ха','kh','ch in Scottish “loch”','trick','хліб','khlib','bread','🍞','Trickster! Looks like X but says a raspy “kh” from your throat.'],
+['Ц','ц','це','ts','ts in “cats”','new','цибуля','tsybulia','onion','🧅','A cup with a little tail. “ts” like in cats.'],
+['Ч','ч','че','ch','ch in “chair”','new','чай','chai','tea','🍵','Looks like a little chair 🪑 (or a 4). Ch!'],
+['Ш','ш','ша','sh','sh in “shoe”','new','шапка','shapka','hat','🧢','A comb with three teeth. Shhh!'],
+['Щ','щ','ща','shch','“fresh cheese” said fast','new','щастя','shchastia','happiness','🍀','Ш grew a tail: sh + ch together, like fre-SH CH-eese.'],
+['Ь','ь','м’який знак','(soft)','no sound, it softens the letter before it','new','сіль','sil’','salt','🧂','The soft sign is silent. It’s a tiny pillow that softens the letter before it.'],
+['Ю','ю','ю','yoo','“you”','new','Юпітер','Yupiter','Jupiter','🪐','Looks like I and O glued together. I-O → “you”!'],
+['Я','я','я','yah','ya in “yard”','new','яблуко','yabluko','apple','🍎','A backwards R that says “yah”. And Я means “I / me”!'],
+];
+const IDX = Object.fromEntries(L.map((x,i)=>[x[0],i]));
+const CONF = {В:'БНР',Б:'ВЬД',Г:'ҐТП',Ґ:'ГТП',Д:'ЛАБ',Е:'ЄЗС',Є:'ЕЗС',И:'ЙНІ',Й:'ИІЇ',І:'ЇИЙ',Ї:'ІЙИ',Н:'ИПЙ',П:'НЛГ',Р:'ЯПВ',С:'ЄЦЕ',У:'ЧЮО',Х:'ЖКГ',Ж:'ХЗШ',Ц:'ЩШС',Ш:'ЩЦЖ',Щ:'ШЦЧ',Ч:'УЦШ',Ю:'ЯОУ',Я:'РЮЄ',Ь:'БЮЯ',З:'ЖСЕ',Л:'ДПМ',Ф:'ВПО',К:'ХГЖ',А:'ОЯЕ',О:'УАЮ',М:'НТЛ',Т:'ГПД'};
+const CATNAME = {friend:'😊 Friend', trick:'🦊 Trickster', new:'✨ New face'};
+const CATEXPLAIN = {
+  all:'Tap any letter to meet it. Collect ⭐⭐⭐ on each one by playing the games!',
+  friend:'Friends look AND sound like English. Free points! 🎉',
+  trick:'Tricksters look like English letters but make a different sound. Don’t trust them! 🦊',
+  new:'New faces: letters you’ve never met. Each one has a silly memory trick.'
+};
+
+// ---------- state ----------
+let S = {m:{}, xp:0, best:0, streak:0, muted:false};
+try{ const d = JSON.parse(localStorage.getItem('abetka-v1')||'null'); if(d) S = Object.assign(S,d); }catch(e){}
+function save(){ try{ localStorage.setItem('abetka-v1', JSON.stringify(S)); }catch(e){} }
+const $ = s=>document.querySelector(s);
+// print-style Cyrillic inside handwriting-font notes (cursive т looks like m!)
+const cy = t => t.replace(/[\u0400-\u04FF]+/g, m=>`<span class="cy">${m}</span>`);
+const rand = a=>a[Math.floor(Math.random()*a.length)];
+const shuffle = a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const mast = U => S.m[U]||0;
+const starsOf = U => { const m=mast(U); return m>=5?3:m>=3?2:m>=1?1:0; };
+function bump(U, d){ S.m[U] = Math.max(0, Math.min(6, mast(U)+d)); }
+function hud(){
+  $('#xp').textContent = S.xp; $('#streak').textContent = S.streak;
+  $('#mastered').textContent = L.filter(x=>starsOf(x[0])===3).length;
+  $('#mute').textContent = S.muted ? '🔇' : '🔊';
+}
+
+// ---------- sound fx ----------
+let actx=null;
+function tone(f, dur=.12, type='sine', when=0, vol=.12){
+  if(S.muted) return;
+  try{
+    actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+    const t = actx.currentTime + when, o = actx.createOscillator(), g = actx.createGain();
+    o.type=type; o.frequency.setValueAtTime(f,t);
+    g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(.001,t+dur);
+    o.connect(g).connect(actx.destination); o.start(t); o.stop(t+dur);
+  }catch(e){}
+}
+const sfx = {
+  good(){ tone(660,.1,'triangle'); tone(990,.18,'triangle',.08); },
+  bad(){ tone(200,.22,'square',0,.06); },
+  pop(){ tone(900,.06,'triangle',0,.15); tone(1400,.05,'sine',.03,.08); },
+  win(){ [523,659,784,1046].forEach((f,i)=>tone(f,.18,'triangle',i*.1)); }
+};
+
+// ---------- speech: built-in Ukrainian recordings ----------
+// kind: 0 = letter name, 1 = example word
+let player=null;
+function speak(U, kind){
+  const src = window.AUDIO && AUDIO[U] && AUDIO[U][kind];
+  if(!src){ toast('Audio didn’t load. Try refreshing the page!'); return; }
+  try{
+    if(player){ player.pause(); }
+    player = new Audio(src);
+    const p = player.play(); if(p && p.catch) p.catch(()=>toast('Tap again to hear it 🔈'));
+  }catch(e){ toast('Your browser blocked the audio. Tap again to hear it 🔈'); }
+}
+
+// ---------- toast & confetti ----------
+let tt;
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('show'),3800); }
+function confetti(n=90){
+  const cols=['#2F5BFF','#FFC83D','#22B573','#FF6B3D','#8B5CF6','#F0445A'];
+  for(let i=0;i<n;i++){
+    const c=document.createElement('div'); c.className='confetti';
+    c.style.left=Math.random()*100+'vw'; c.style.background=rand(cols);
+    c.style.animationDuration=(1.8+Math.random()*1.6)+'s'; c.style.animationDelay=(Math.random()*.4)+'s';
+    c.style.borderRadius = Math.random()<.4?'50%':'2px';
+    document.body.appendChild(c); setTimeout(()=>c.remove(),4000);
+  }
+}
+
+// ---------- tabs ----------
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected', x===b));
+  ['explore','quiz','pop'].forEach(id=>$('#'+id).hidden = id!==b.dataset.tab);
+  if(b.dataset.tab!=='pop' && P.running) endPop(true);
+  if(b.dataset.tab==='explore') renderGrid();
+}));
+$('#mute').addEventListener('click',()=>{ S.muted=!S.muted; save(); hud(); });
+
+// ---------- explore ----------
+let filter='all';
+function hl(word, U, l){ return [...word].map(ch => (ch===U||ch===l) ? `<mark>${ch}</mark>` : ch).join(''); }
+function renderGrid(){
+  $('#grid').innerHTML = L.map((x,i)=>{
+    const st = starsOf(x[0]);
+    return `<button class="tile cat-${x[5]} ${filter!=='all'&&x[5]!==filter?'hide':''}" data-i="${i}" aria-label="Letter ${x[0]}, sounds like ${x[3]}">
+      <span class="big">${x[0]}<small>${x[1]}</small></span>
+      <span class="snd">${x[3]}</span>
+      <span class="stars">${'<b>★</b>'.repeat(st)}${'★'.repeat(3-st)}</span></button>`;
+  }).join('');
+}
+$('#grid').addEventListener('click',e=>{ const t=e.target.closest('.tile'); if(t) openCard(+t.dataset.i); });
+$('#filters').addEventListener('click',e=>{
+  const c=e.target.closest('.chip'); if(!c) return;
+  filter=c.dataset.f;
+  document.querySelectorAll('#filters .chip').forEach(x=>x.setAttribute('aria-pressed', x===c));
+  $('#explain').textContent = CATEXPLAIN[filter];
+  renderGrid();
+});
+
+let cur=0;
+function openCard(i){
+  cur=(i+L.length)%L.length; const x=L[cur];
+  const col = {friend:'var(--friend-bg)',trick:'var(--trick-bg)',new:'var(--new-bg)'}[x[5]];
+  const st = starsOf(x[0]);
+  $('#card').innerHTML = `
+   <div class="card-top" style="background:${col}">
+     <button class="icon-btn close" data-act="close" aria-label="Close">✕</button>
+     <span class="badge">${CATNAME[x[5]]}</span>
+     <div class="card-letter">${x[0]}<small>${x[1]}</small></div>
+     <div class="card-name">letter name: “${x[2]}” · ${'⭐'.repeat(st)}${'☆'.repeat(3-st)}</div>
+   </div>
+   <div class="card-body">
+     <div class="row" style="justify-content:space-between">
+       <div class="say">${x[3]}<span>like ${x[4]}</span></div>
+       <button class="btn" data-act="sayL">🔈 Letter</button>
+     </div>
+     <div class="word">
+       <div class="emo">${x[9]}</div>
+       <div style="flex:1"><div class="uk">${hl(x[6],x[0],x[1])}</div><div class="tr">“${x[7]}” = ${x[8]}</div></div>
+       <button class="btn" data-act="sayW">🔈</button>
+     </div>
+     <div class="tip">💡 ${cy(x[10])}</div>
+     <div class="nav"><button class="btn ghost" data-act="prev">← ${L[(cur+L.length-1)%L.length][0]}</button><button class="btn ghost" data-act="next">${L[(cur+1)%L.length][0]} →</button></div>
+   </div>`;
+  $('#modal').classList.add('open');
+}
+function closeCard(){ $('#modal').classList.remove('open'); renderGrid(); }
+$('#modal').addEventListener('click',e=>{
+  if(e.target.id==='modal') return closeCard();
+  const a=e.target.closest('[data-act]'); if(!a) return;
+  const x=L[cur];
+  ({close:closeCard, sayL:()=>speak(x[0],0), sayW:()=>speak(x[0],1), prev:()=>openCard(cur-1), next:()=>openCard(cur+1)})[a.dataset.act]();
+});
+document.addEventListener('keydown',e=>{
+  if($('#modal').classList.contains('open')){
+    if(e.key==='Escape') closeCard();
+    if(e.key==='ArrowRight') openCard(cur+1);
+    if(e.key==='ArrowLeft') openCard(cur-1);
+  } else if(!$('#qplay').hidden && !$('#quiz').hidden){
+    if(/^[1-4]$/.test(e.key)){ const b=document.querySelectorAll('#opts .opt')[+e.key-1]; if(b && !b.disabled) b.click(); }
+    if(e.key==='Enter' && !$('#qnext').hidden) $('#qnext').click();
+  }
+});
+
+// ---------- quiz ----------
+let pack='all';
+const Q = {pool:[], i:0, score:0, list:[], missed:new Set(), timer:null, cur:null};
+$('#packs').addEventListener('click',e=>{
+  const p=e.target.closest('.pack'); if(!p) return; pack=p.dataset.pack;
+  document.querySelectorAll('.pack').forEach(x=>x.setAttribute('aria-pressed', x===p));
+});
+function poolFor(p){
+  if(p==='all') return L.map(x=>x[0]);
+  if(p==='weak'){ const w=L.filter(x=>starsOf(x[0])<3).map(x=>x[0]); return w.length>=4?w:L.map(x=>x[0]); }
+  return L.filter(x=>x[5]===p).map(x=>x[0]);
+}
+function distractLetters(U, n=3){
+  const out=new Set(); const conf=[...(CONF[U]||'')].filter(c=>c!==U);
+  shuffle(conf).slice(0,2).forEach(c=>out.add(c));
+  const all=shuffle(L.map(x=>x[0]).filter(c=>c!==U));
+  for(const c of all){ if(out.size>=n) break; out.add(c); }
+  return [...out].slice(0,n);
+}
+function startQuiz(){
+  Q.pool = poolFor(pack);
+  let list=[]; while(list.length<10) list = list.concat(shuffle(Q.pool));
+  Q.list = list.slice(0,10); Q.i=0; Q.score=0; Q.missed=new Set();
+  $('#qsetup').hidden=true; $('#qend').hidden=true; $('#qplay').hidden=false;
+  ask();
+}
+function ask(){
+  clearTimeout(Q.timer);
+  const U = Q.list[Q.i], x = L[IDX[U]];
+  $('#qprog').style.width = (Q.i/10*100)+'%';
+  $('#qcount').textContent = `${Q.i+1}/10`;
+  $('#qfb').innerHTML=''; $('#qnext').hidden=true; $('#qspeak').hidden=true;
+  const r=Math.random();
+  const type = U==='Ь' ? (r<.5?'l2s':'word') : r<.4?'l2s':r<.75?'s2l':'word';
+  const show=$('#qshow'); show.className='qshow';
+  let opts;
+  if(type==='l2s'){
+    $('#qprompt').textContent = x[5]==='trick' ? 'Careful, trickster alert! 🦊 What sound does this make?' : 'What sound does this letter make?';
+    show.innerHTML = `${x[0]} <span style="opacity:.7;font-weight:600">${x[1]}</span>`;
+    opts = shuffle([U,...distractLetters(U)]).map(c=>({c, html:`${L[IDX[c]][3]}<small>like ${L[IDX[c]][4]}</small>`}));
+  } else if(type==='s2l'){
+    $('#qprompt').textContent = 'Which letter makes this sound?';
+    show.classList.add('sound');
+    show.innerHTML = `“${x[3]}”<span class="hint">like ${x[4]}</span>`;
+    opts = shuffle([U,...distractLetters(U)]).map(c=>({c, html:`${c} ${L[IDX[c]][1]}`}));
+  } else {
+    $('#qprompt').textContent = 'Read it! How does this word sound?';
+    show.classList.add('wordq');
+    show.innerHTML = hl(x[6],x[0],x[1]);
+    opts = shuffle([U,...distractLetters(U)]).map(c=>({c, html:L[IDX[c]][7]}));
+  }
+  Q.cur = {U, type};
+  $('#opts').innerHTML = opts.map((o,k)=>`<button class="opt" data-c="${o.c}"><span>${o.html}</span></button>`).join('');
+}
+$('#opts').addEventListener('click',e=>{
+  const b=e.target.closest('.opt'); if(!b||b.disabled) return;
+  const {U,type}=Q.cur, x=L[IDX[U]];
+  const ok = b.dataset.c===U;
+  document.querySelectorAll('#opts .opt').forEach(o=>{ o.disabled=true; if(o.dataset.c===U) o.classList.add('right'); });
+  if(ok){
+    Q.score++; S.streak++; bump(U,1);
+    const gain = 10 + Math.min(S.streak,10)*2; S.xp+=gain; sfx.good();
+    const cheers=['Чудово! (Wonderful!)','Супер!','Клас! (Cool!)','Молодець! (Well done!)','Так! (Yes!)','Браво!'];
+    $('#qfb').innerHTML = `<div class="cheer ok">${rand(cheers)} +${gain} XP${S.streak>=3?` · 🔥${S.streak} streak!`:''}</div>`+
+      (type==='word'?`<div class="tipline">${x[9]} ${cy(x[6])} = ${x[8]}</div>`:`<div class="tipline">${x[9]} ${cy(x[0])} as in ${cy(x[6])} (${x[8]})</div>`);
+    Q.timer = setTimeout(next, 1500);
+  } else {
+    b.classList.add('wrong'); S.streak=0; bump(U,-1); Q.missed.add(U); sfx.bad();
+    $('#qfb').innerHTML = `<div class="cheer no">Not quite! It’s ${x[0]} = “${x[3]}”</div><div class="tipline">💡 ${cy(x[10])}</div>`;
+    $('#qnext').hidden=false;
+  }
+  $('#qspeak').hidden=false;
+  save(); hud();
+});
+$('#qspeak').addEventListener('click',()=>{ speak(Q.cur.U, Q.cur.type==='word'?1:0); clearTimeout(Q.timer); $('#qnext').hidden=false; });
+function next(){ Q.i++; if(Q.i>=10) endQuiz(); else ask(); }
+$('#qnext').addEventListener('click',next);
+function endQuiz(){
+  $('#qprog').style.width='100%';
+  $('#qplay').hidden=true; $('#qend').hidden=false;
+  const s=Q.score, st = s>=9?3:s>=7?2:s>=4?1:0;
+  $('#endscore').textContent = `${s}/10`;
+  $('#endstars').textContent = '⭐'.repeat(st)+'☆'.repeat(3-st);
+  $('#endmsg').textContent = s===10?'PERFECT! Ти зірка! (You’re a star!) 🌟': s>=7?'Awesome job! Your brain is soaking these up.': s>=4?'Nice! A few more rounds and these will stick.':'Every pro started here. Try the Explore cards, then come back!';
+  $('#review').innerHTML = Q.missed.size ? `<div style="width:100%;text-align:center;font-weight:700">Tap to review:</div>`+[...Q.missed].map(U=>`<button data-u="${U}">${U}</button>`).join('') : '';
+  if(s>=7){ confetti(); sfx.win(); }
+}
+$('#review').addEventListener('click',e=>{ const b=e.target.closest('button'); if(b) openCard(IDX[b.dataset.u]); });
+$('#qstart').addEventListener('click',startQuiz);
+$('#qagain').addEventListener('click',startQuiz);
+$('#qback').addEventListener('click',()=>{ $('#qend').hidden=true; $('#qsetup').hidden=false; });
+
+// ---------- bubble pop ----------
+const P = {running:false, score:0, time:45, combo:1, target:null, bubbles:[], last:0, spawnAcc:0, raf:0};
+const pond = $('#pond');
+function setBest(){ $('#pbest').textContent = S.best ? `🏆 Your best: ${S.best}` : ''; }
+function newTarget(){
+  let U; do{ U = rand(L)[0]; }while(U===P.target || U==='Ь');
+  P.target=U; const x=L[IDX[U]];
+  $('#ptarget').textContent = `“${x[3]}”`; $('#phint').textContent = `like ${x[4]}`;
+  spawn(U);
+}
+function spawn(force){
+  const W = pond.clientWidth, H = pond.clientHeight;
+  let U = force;
+  if(!U){
+    const r=Math.random();
+    if(r<.3) U=P.target;
+    else if(r<.6 && CONF[P.target]) U=rand([...CONF[P.target]]);
+    else U=rand(L)[0];
+  }
+  const x=L[IDX[U]], el=document.createElement('button');
+  el.className='bubble'; el.textContent = Math.random()<.4 ? x[1] : x[0];
+  const size = W<520?66:76;
+  const bx = Math.random()*(W-size-10)+5;
+  const b = {el, U, x:bx, y:H+10, sp: 55+Math.random()*45 + Math.min(P.score,400)/8, wob:Math.random()*6.28};
+  el.style.transform=`translate(${bx}px,${b.y}px)`;
+  el.addEventListener('pointerdown',ev=>{ ev.preventDefault(); hit(b); });
+  pond.appendChild(el); P.bubbles.push(b);
+}
+function floaty(txt, b){
+  const f=document.createElement('div'); f.className='floaty'; f.textContent=txt;
+  f.style.left=(b.x+10)+'px'; f.style.top=(b.y)+'px'; pond.appendChild(f); setTimeout(()=>f.remove(),800);
+}
+function hit(b){
+  if(!P.running || b.dead) return;
+  if(b.U===P.target){
+    b.dead=true; b.el.classList.add('popped'); setTimeout(()=>b.el.remove(),260);
+    const pts = 10*P.combo; P.score+=pts; P.combo=Math.min(5,P.combo+1); bump(b.U,1);
+    floaty('+'+pts, b); sfx.pop();
+    newTarget();
+  } else {
+    b.el.classList.remove('bad'); void b.el.offsetWidth; b.el.classList.add('bad');
+    P.time=Math.max(0,P.time-3); P.combo=1; sfx.bad();
+    pond.classList.remove('flash'); void pond.offsetWidth; pond.classList.add('flash');
+    floaty('−3s', b);
+    toast(`That’s ${L[IDX[b.U]][0]} = “${L[IDX[b.U]][3]}”`);
+  }
+  popHud();
+}
+function popHud(){
+  $('#pscore').textContent=P.score; $('#ptime').textContent=Math.ceil(P.time); $('#pcombo').textContent='×'+P.combo;
+}
+function loop(ts){
+  if(!P.running) return;
+  const dt = Math.min(.05,(ts-(P.last||ts))/1000); P.last=ts;
+  P.time -= dt; P.spawnAcc += dt;
+  if(P.spawnAcc > Math.max(.45, .8 - P.score/1500)){ P.spawnAcc=0; spawn(); }
+  for(const b of P.bubbles){
+    if(b.dead) continue;
+    b.y -= b.sp*dt; b.wob += dt*2.2;
+    b.el.style.transform=`translate(${b.x + Math.sin(b.wob)*8}px,${b.y}px)`;
+    if(b.y < -90){ b.dead=true; b.el.remove(); if(b.U===P.target){ spawn(P.target); } }
+  }
+  P.bubbles = P.bubbles.filter(b=>!b.dead);
+  popHud();
+  if(P.time<=0) return endPop();
+  P.raf=requestAnimationFrame(loop);
+}
+function startPop(){
+  P.bubbles.forEach(b=>b.el.remove()); P.bubbles=[];
+  Object.assign(P,{running:true,score:0,time:45,combo:1,last:0,spawnAcc:0,target:null});
+  $('#poverlay').hidden=true;
+  newTarget(); spawn(); spawn();
+  popHud(); P.raf=requestAnimationFrame(loop);
+}
+function endPop(silent){
+  P.running=false; cancelAnimationFrame(P.raf);
+  P.bubbles.forEach(b=>b.el.remove()); P.bubbles=[];
+  $('#ptime').textContent='0';
+  const gain = Math.round(P.score/5); S.xp += gain;
+  let msg = `You scored ${P.score} points and earned ${gain} XP.`;
+  if(P.score> S.best){ S.best=P.score; if(!silent && P.score>0){ msg='🎉 NEW HIGH SCORE! '+msg; confetti(); sfx.win(); } }
+  save(); hud();
+  $('#ptitle').textContent = silent ? 'Bubble Pop 🫧' : 'Time’s up! ⏰';
+  $('#pdesc').textContent = silent ? $('#pdesc').textContent : msg;
+  $('#pplay').textContent = 'Play again!';
+  $('#ptarget').textContent='—'; $('#phint').textContent='Press play to start';
+  setBest(); $('#poverlay').hidden=false;
+}
+$('#pplay').addEventListener('click',startPop);
+
+// init
+renderGrid(); hud(); setBest();
+</script>
+</body>
+</html>
